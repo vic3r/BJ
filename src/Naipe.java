@@ -2,13 +2,29 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 
 public class Naipe {
 	
-	private static final String[] valores= new String[13],
-						  		  figuras= new String[4]; 
+	private static final String[] valores= {"As",
+											"Dos",
+											"Tres",
+											"Cuatro",
+											"Cinco", 
+											"Seis",
+											"Siete",
+											"Ocho",
+											"Nueve",
+											"Diez",
+											"Joto",
+											"Queen", 
+											"Rey"},
+						  		  figuras= {"Espadas",
+											"Corazones",
+											"Trebol",
+											"Diamantes"}; 
 	private static final Image[] naipesImg= {new ImageIcon("Cartas\\Picas\\1.png").getImage(),
 											new ImageIcon("Cartas\\Picas\\2.png").getImage(),
 											new ImageIcon("Cartas\\Picas\\3.png").getImage(),
@@ -48,36 +64,49 @@ public class Naipe {
 											new ImageIcon("Cartas\\Trebol\\11.png").getImage(),
 											new ImageIcon("Cartas\\Trebol\\12.png").getImage(),
 											new ImageIcon("Cartas\\Trebol\\13.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\1.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\2.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\3.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\4.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\5.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\6.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\7.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\8.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\9.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\10.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\11.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\12.png").getImage(),
-											new ImageIcon("Cartas\\Diamantes\\13.png").getImage()};																	
+											new ImageIcon("Cartas\\Diamante\\1.png").getImage(),
+											new ImageIcon("Cartas\\Diamante\\2.png").getImage(),
+											new ImageIcon("Cartas\\Diamante\\3.png").getImage(),
+											new ImageIcon("Cartas\\Diamante\\4.png").getImage(),
+											new ImageIcon("Cartas\\Diamante\\5.png").getImage(),
+											new ImageIcon("Cartas\\Diamante\\6.png").getImage(),
+											new ImageIcon("Cartas\\Diamante\\7.png").getImage(),
+											new ImageIcon("Cartas\\Diamante\\8.png").getImage(),
+											new ImageIcon("Cartas\\Diamante\\9.png").getImage(),
+											new ImageIcon("Cartas\\Diamante\\10.png").getImage(),
+											new ImageIcon("Cartas\\Diamante\\11.png").getImage(),
+											new ImageIcon("Cartas\\Diamante\\12.png").getImage(),
+											new ImageIcon("Cartas\\Diamante\\13.png").getImage()};																	
 											
 	private static final Image dorsoImagen= new ImageIcon("Cartas\\Fondo_carta.png").getImage();
-	private int figura, 
-				valor; 
-	
+	private int figura, //del 0 al 3 
+				valor;  //del 0 al 12
+	private boolean[][] validacion;
+	private Random random;
 	
 	public Naipe(){
-		
+		this.random= new Random();
+		this.validacion= new boolean[4][13];
+		this.valor=this.random.nextInt(13);
+		this.figura=this.random.nextInt(4);
+		this.validacion[this.figura][this.valor]=true;
 	}
+	
 	public String toString(){//Valores[valor]+"de"+figuras[Figura];
-		
-		return "";//duda
+		return this.valores[valor]+" de "+this.figuras[figura];//duda
 	}
 	
 	public Image getImage(){
-		
-		return this.naipesImg[0];//duda 
+		System.out.println(this);
+		return this.naipesImg[(this.valor)+(this.figura*13)];//duda 
+	}
+	public void setValor(){
+		do{
+			this.valor=this.random.nextInt(13);
+			this.figura=this.random.nextInt(4);
+			
+		}
+		while(this.validacion[this.figura][this.valor]==true);
 	}
 	public int getValor(){
 		return this.valor;//duda

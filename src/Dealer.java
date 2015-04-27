@@ -6,10 +6,8 @@ public class Dealer extends Jugador{
 		super();
 	}
 	public void setSaldo(){
-		this.saldo=1000000000;
-		
+		this.saldo=1000000000;	
 	}
-
 	public void setNombre(){
 		this.nombre="Dealer";
 	}

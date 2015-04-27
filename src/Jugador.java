@@ -3,14 +3,21 @@ import javax.swing.JOptionPane;
 
 public class Jugador {
 
-	protected int saldo;
+	protected int saldo,
+				  apuesta,
+				  mano;
 	protected String nombre; 
 	protected boolean perdio;
 	protected Naipe[] juego; //las cartas que va teniendo el jugador
+	private int temporal;
 	
 	public Jugador(){
+		this.juego= new Naipe[30];
 		this.setNombre();
 		this.setSaldo();
+		this.mano=0;
+		this.apuesta=0;
+		
 	}
 	public void setSaldo(){
 		do{
@@ -30,8 +37,20 @@ public class Jugador {
 		return this.perdio;
 	}
 	public int getTotal(){
-		int total=0;
-		return total; //Regresa la suma de puntos que lleva en ese momento el jugador en función de las cartas que tiene)
+		this.saldo-=this.apuesta;
+		return apuesta; //Regresa la suma de puntos que lleva en ese momento el jugador en función de las cartas que tiene)
+	}
+	public void setMano(){
+		this.temporal=this.juego[0].getValor();
+		if(this.temporal==0){
+			this.temporal=11;
+		}else if(this.temporal>10){
+			this.temporal=10;
+		}else{
+			this.temporal+=1;
+		}
+		this.mano+=this.temporal;
+		System.out.println("La mano es "+this.mano);
 	}
 	public void ganoPartida(){
 		//Este método lo mandan a llamar para indicarle al jugador que ganó esta partida y modifica la cantidad de dinero disponible 
@@ -44,7 +63,12 @@ public class Jugador {
 	}
 	public boolean otraCarta(){
 		 //(Regresa si el jugador quiere otra carta o no) 
-		return false;
+		if(JOptionPane.showConfirmDialog(null, "Quieres otra carta")>0){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 	public boolean isBlackJack(){
 		return false;// regresa si el jugador tiene un BlackJack
