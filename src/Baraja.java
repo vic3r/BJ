@@ -20,13 +20,16 @@ public class Baraja extends JPanel implements ActionListener, Runnable{
 	
 	private int noJugador,
 				nvoNaipe,
-				conteoCartas;
+				conteoCartas,
+				conteoBotones,
+				x;
 	private boolean selector;
 	private Image maletin; 
 	private Font font;
 	
 	protected JButton guardar,
-					  lastMatch;
+					  lastMatch,
+					  nextPartida;
 	
 	private Jugador[] jugadores;
 	private Dealer dealer;
@@ -64,11 +67,14 @@ public class Baraja extends JPanel implements ActionListener, Runnable{
 		this.lastMatch= new JButton("Cargar partida");
 		this.lastMatch.addActionListener(this);
 		this.add(this.lastMatch);
+		this.nextPartida= new JButton("Siguiente partida");
 		this.juego=juego;
 		this.baraja=new Naipe[30];
 		this.dealer.juego=this.baraja;
 		this.nvoNaipe=0;
 		this.conteoCartas=0;
+		this.x=0;
+		this.conteoBotones=0;
 		this.selector=true;
 		this.hilo= new Thread();
 		//this.hilo.start();
@@ -81,7 +87,7 @@ public class Baraja extends JPanel implements ActionListener, Runnable{
 		this.botonesApuesta= new JButton[this.noJugador];
 		if(this.noJugador<=4){
 			for(int i=0; i<this.noJugador;i++){
-				this.jugadores[i]=new Jugador();
+				this.jugadores[i]=new Jugador(i+1);
 				this.jugadores[i].juego=this.baraja;
 				this.nombres[i]=new JLabel(this.jugadores[i].getNombre());
 				this.saldos[i]=new JLabel("Saldo: "+this.jugadores[i].getSaldo()+"");
@@ -182,7 +188,7 @@ public class Baraja extends JPanel implements ActionListener, Runnable{
 		return g;
 	}
 	public Graphics paintFondo(Graphics g){
-		super.paintComponent(g);
+		//super.paintComponent(g);
 		g.setColor(new Color(139,69,19));
 		g.fillOval(getWidth()/2-600, getHeight()/2-925, 1200, 1200);
 		g.setColor(new Color(0,153,0));
@@ -203,7 +209,6 @@ public class Baraja extends JPanel implements ActionListener, Runnable{
 		g.drawString("BLACKJACK PAYS 3 to 2", getWidth()/2-90, getHeight()/2+25);
 		g.setColor(Color.WHITE);
 		g.drawString("INSURANCE", getWidth()/2-45, getHeight()/2+50);
-
 		return g;
 	}
 	public Graphics paintMenu(Graphics g){
@@ -262,76 +267,140 @@ public class Baraja extends JPanel implements ActionListener, Runnable{
 		return g;
 	}
 	public Graphics paintCartas(Graphics g){
+		if(this.x==0){
+			super.paint(g);
+		}
 		if(this.noJugador>0){
 			if(this.selector){
 				this.baraja[nvoNaipe]= new Naipe();
 				this.selector=false;
 			}else{
-				this.mezclar();
+				this.next();//
+			//this.mezclar();
+				this.baraja[this.nvoNaipe].setValor();
 			}
-			g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-42, getHeight()/3-40, this);
+			g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-42+this.x, getHeight()/3-40, this);
 			this.dealer.setMano();
 		}
 		switch(this.noJugador){
 			case 1:
-				this.mezclar();
-				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-42, getHeight()/3+220, this);
+				this.baraja[this.nvoNaipe].setValor();
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-42+this.x, getHeight()/3+220, this);
 				this.jugadores[0].setMano();
+				this.posicion=this.jugadores[0].getMano();
 				break;
 			case 2:
-				this.mezclar();
-				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-157, getHeight()/2+100, this);
+				this.baraja[this.nvoNaipe].setValor();
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-157+this.x, getHeight()/2+100, this);
 				this.jugadores[0].setMano();
-				this.mezclar();
-				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2+72, getHeight()/2+100, this);
+				this.posicion=this.jugadores[0].getMano();
+				
+				this.baraja[this.nvoNaipe].setValor();
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2+72+this.x, getHeight()/2+100, this);
 				this.jugadores[1].setMano();
 				break;
 			case 3:
-				this.mezclar();
-				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-247, getHeight()/3+180, this);
+				this.baraja[this.nvoNaipe].setValor();
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-247+this.x, getHeight()/3+180, this);
 				this.jugadores[0].setMano();
-				this.mezclar();
-				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-42, getHeight()/3+220, this);
+				this.posicion=this.jugadores[0].getMano();
+				this.baraja[this.nvoNaipe].setValor();
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-42+this.x, getHeight()/3+220, this);
 				this.jugadores[1].setMano();
-				this.mezclar();
-				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2+165, getHeight()/3+180, this);
+				this.baraja[this.nvoNaipe].setValor();
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2+165+this.x, getHeight()/3+180, this);
 				this.jugadores[2].setMano();
 				break;
 			case 4:
-				this.mezclar();
-				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-345, getHeight()/2, this);
+				this.baraja[this.nvoNaipe].setValor();
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-345+this.x, getHeight()/2, this);
 				this.jugadores[0].setMano();
-				this.mezclar();
-				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-157, getHeight()/2+100, this);
+				this.posicion=this.jugadores[0].getMano();
+				this.baraja[this.nvoNaipe].setValor();
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-157+this.x, getHeight()/2+100, this);
 				this.jugadores[1].setMano();
-				this.mezclar();
-				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2+72, getHeight()/2+100, this);
+				this.baraja[this.nvoNaipe].setValor();
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2+72+this.x, getHeight()/2+100, this);
 				this.jugadores[2].setMano();
-				this.mezclar();
-				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2+250, getHeight()/2, this);
+				this.baraja[this.nvoNaipe].setValor();
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2+250+this.x, getHeight()/2, this);
 				this.jugadores[3].setMano();
 				break;
 		}
 		return g;
 	}
+	public Graphics paintExtraCartas(Graphics g, int referencia){
+		switch(referencia){
+		case 0:
+			this.x+=10;
+			this.baraja[this.nvoNaipe].setValor();
+			g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-42+this.x, getHeight()/3-40, this);
+			this.dealer.setMano();
+			break;
+		case 1:
+			this.x+=10;
+			this.baraja[this.nvoNaipe].setValor();
+			if(this.noJugador==1){
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-42+this.x, getHeight()/3+220, this);
+			}else if(this.noJugador==2){
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-157+this.x, getHeight()/2+100, this);
+			}else if(this.noJugador==3){
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-247+this.x, getHeight()/3+180, this);
+			}else{
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-345+this.x, getHeight()/2, this);
+			}
+			this.jugadores[0].setMano();
+			this.posicion=this.jugadores[0].getMano();
+			break;
+		case 2:
+			this.x+=10;
+			this.baraja[this.nvoNaipe].setValor();
+			if(this.noJugador==2){
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2+72+this.x, getHeight()/2+100, this);
+			}else if(this.noJugador==3){
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-42+this.x, getHeight()/3+220, this);
+			}else {
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2-157+this.x, getHeight()/2+100, this);
+			}
+			this.jugadores[1].setMano();
+			break;
+		case 3:
+			this.x+=10;
+			this.baraja[this.nvoNaipe].setValor();
+			if(this.noJugador==3){
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2+165+this.x, getHeight()/3+180, this);
+			}else{
+				g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2+72+this.x, getHeight()/2+100, this);
+			}
+			this.jugadores[2].setMano();
+			break;
+		case 4:
+			this.x+=10;
+			this.baraja[this.nvoNaipe].setValor();
+			g.drawImage(this.baraja[nvoNaipe].getImage(),getWidth()/2+250+this.x, getHeight()/2, this);
+			this.jugadores[3].setMano();
+			break;
+		}
+		return g;
+	}
 	public void paintComponent(Graphics g){
+		super.paintComponent(g);
 		this.paintFondo(g);
 		if(this.noJugador==0){
 			this.paintMenu(g);
 		}else{
 			this.paintJugador(g);
-			this.paintCartas(g);
 		}
 	}
 	public void mezclar(){
-		this.baraja[this.nvoNaipe].setValor();
+		//this.baraja[this.nvoNaipe].setValor();
+		this.baraja[this.nvoNaipe].resetearBaraja();
 	}
 	
 	public Naipe next(){
 		if((((this.noJugador+1)*2)+this.conteoCartas)>42){
 			nvoNaipe++;
 		}
-		
 		return this.baraja[nvoNaipe]; //duda regresa una nueva baraja
 	}
 
@@ -349,9 +418,44 @@ public class Baraja extends JPanel implements ActionListener, Runnable{
 					this.jugadores[i].apuesta=Integer.parseInt(this.apuestas[i].getText());
 					this.jugadores[i].getTotal();
 					this.saldos[i].setText("Saldo: "+this.jugadores[i].getSaldo());
-					repaint();
-					System.out.println(this.jugadores[i].saldo);
+					//this.hilo.start();
 					this.botonesApuesta[i].setEnabled(false);
+					if(!this.botonesApuesta[i].isEnabled()){
+						this.conteoBotones+=1;
+					}
+					if(this.conteoBotones==this.noJugador){
+						for(int r=0; r<=1; r++){
+							this.paintCartas(getGraphics());
+							this.x+=20;
+						}
+						for(int r=0; r<this.jugadores.length; r++){
+							while(this.jugadores[r].mano<21){
+								if(this.jugadores[r].otraCarta()){
+									this.paintExtraCartas(getGraphics(), r+1);
+								}else{
+									break;
+								}
+							}
+						}
+						while(this.dealer.mano<17){
+							this.paintExtraCartas(getGraphics(), 0);
+						}
+						this.add(this.nextPartida);
+						this.nextPartida.setBounds(getWidth()-100, getHeight()-30, 100, 30);
+						this.nextPartida.addActionListener(new ActionListener() {
+							
+							@Override
+							public void actionPerformed(ActionEvent ett) {
+								// TODO Auto-generated method stub
+								Baraja.super.paint(getGraphics());
+								for(int i=0; i<Baraja.this.jugadores.length;i++){
+									Baraja.this.botonesApuesta[i].setEnabled(true);;
+								}
+								remove(Baraja.this.nextPartida);
+								
+							}
+						});
+					}	
 				}
 			}
 		}
@@ -360,7 +464,7 @@ public class Baraja extends JPanel implements ActionListener, Runnable{
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		if(this.jugadores[0].otraCarta()==true){
+		/*if(this.jugadores[0].otraCarta()==true){
 			try{
 				repaint();
 				Thread.sleep(3000);
@@ -368,7 +472,7 @@ public class Baraja extends JPanel implements ActionListener, Runnable{
 			catch(Exception e){
 				System.out.println();
 			}
-		}
+		}*/
 		
 	}
 }

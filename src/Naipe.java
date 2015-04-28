@@ -104,9 +104,18 @@ public class Naipe {
 		do{
 			this.valor=this.random.nextInt(13);
 			this.figura=this.random.nextInt(4);
+			//this.validacion[this.figura][this.valor]=true;
 			
 		}
 		while(this.validacion[this.figura][this.valor]==true);
+		this.validacion[this.figura][this.valor]=true;
+	}
+	public void resetearBaraja(){
+		for(int f=0; f<this.validacion.length;f++){
+			for(int c=0; c<this.validacion[f].length;c++){
+				this.validacion[f][c]=true;
+			}
+		}
 	}
 	public int getValor(){
 		return this.valor;//duda
