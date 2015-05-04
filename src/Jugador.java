@@ -7,10 +7,12 @@ public class Jugador {
 				  apuesta,
 				  mano;
 	protected String nombre; 
-	protected boolean perdio;
+	protected boolean perdio,
+					  hayAs;
 	protected Naipe[] juego; //las cartas que va teniendo el jugador
 	private int temporal,
 				noPlayer;
+	private int as;
 	
 	public Jugador(){
 		this.juego= new Naipe[30];
@@ -18,6 +20,8 @@ public class Jugador {
 		this.setSaldo();
 		this.mano=0;
 		this.apuesta=0;
+		this.hayAs=false;
+		this.as=0;
 	}
 	public Jugador(int num){
 		this.juego= new Naipe[30];
@@ -26,16 +30,35 @@ public class Jugador {
 		this.noPlayer=num;
 		this.mano=0;
 		this.apuesta=0;
+		this.hayAs=false;
+		this.as=0;
+	}
+	public Jugador(int num, String nombre, int saldo){
+		this.juego= new Naipe[30];
+		this.setNombre(num, nombre);
+		this.setSaldo(num, saldo);
+		this.noPlayer=num;
+		this.mano=0;
+		this.apuesta=0;
+		this.hayAs=false;
+		this.as=0;
 	}
 	public void setSaldo(int num){
-		do{
-			this.saldo=Integer.parseInt(JOptionPane.showInputDialog("Escriba su saldo jugador "+num));
-		}while(saldo<=10);
+		try{
+			do{
+				this.saldo=Integer.parseInt(JOptionPane.showInputDialog("Escriba su saldo jugador "+num));
+			}while(saldo<15);
+		}catch(NumberFormatException e){
+			this.setSaldo(num);
+		}
 	}
 	public void setSaldo(){
 		do{
 			this.saldo=Integer.parseInt(JOptionPane.showInputDialog("Escriba su saldo jugador"));
-		}while(saldo<=10);
+		}while(saldo<15);//saldo minimo 10
+	}
+	public void setSaldo(int num, int saldo){
+		this.saldo=saldo;
 	}
 	public int getSaldo(){
 		return this.saldo;
@@ -46,6 +69,10 @@ public class Jugador {
 	public void setNombre(){
 		this.nombre=JOptionPane.showInputDialog("Escriba su nombre jugador");
 	}
+	public void setNombre(int num, String nombre){
+		this.nombre=nombre;
+	}
+	
 	public String getNombre(){
 		return this.nombre;
 	}
@@ -53,13 +80,24 @@ public class Jugador {
 		return this.perdio;
 	}
 	public int getTotal(){
+		if(this.apuesta>this.saldo){
+			do{
+				this.apuesta=Integer.parseInt(JOptionPane.showInputDialog("Apuesta invalida"));
+			}while((this.apuesta>this.saldo) || this.apuesta<=0);
+		}
 		this.saldo-=this.apuesta;
-		return apuesta; //Regresa la suma de puntos que lleva en ese momento el jugador en función de las cartas que tiene)
+		return this.apuesta; //Regresa la suma de puntos que lleva en ese momento el jugador en función de las cartas que tiene)
 	}
 	public void setMano(){
 		this.temporal=this.juego[0].getValor();
 		if(this.temporal==0){
-			this.temporal=11;
+			if((this.mano+11)>21){
+				this.temporal=1;
+			}else{
+				this.hayAs=true;
+				this.as+=1;
+				this.temporal=11;
+			}
 		}else if(this.temporal>=10){
 			this.temporal=10;
 		}else{
@@ -72,7 +110,11 @@ public class Jugador {
 			}
 		}
 		else if(this.mano>21){
-			if(this.isBlackJack()){
+			if(this.hayAs){
+				this.mano-=(this.as*10);
+				this.as=0;
+				this.hayAs=false;
+			}else{
 				this.perdioPartida();
 			}
 		}
@@ -93,9 +135,15 @@ public class Jugador {
 	}
 	public void perdioPartida( ){
 		//(Este método lo mandan a llamar para indicarle al jugador que perdió esta partida y modifica la cantidad de dinero disponible).
-		JOptionPane.showMessageDialog(null, "Perdió el jugador "+this.noPlayer+" la partida");
+		if(this.noPlayer==0){
+			JOptionPane.showMessageDialog(null, "Perdió el dealer la partida");
+		}else{
+			JOptionPane.showMessageDialog(null, "Perdió el jugador "+this.noPlayer+" la partida");
+		}
 	}
 	public void empatoParitda(){
+		JOptionPane.showMessageDialog(null, "Se empato la partida");
+		this.saldo+=apuesta;
 		//(Este método lo mandan a llamar para indicarle al jugador que empató esta partida y modifica la cantidad de dinero disponible).
 	}
 	public boolean otraCarta(){

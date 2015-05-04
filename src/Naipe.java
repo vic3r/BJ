@@ -100,6 +100,9 @@ public class Naipe {
 		System.out.println(this);
 		return this.naipesImg[(this.valor)+(this.figura*13)];//duda 
 	}
+	public Image getDorsoImage(){
+		return this.dorsoImagen;
+	}
 	public void setValor(){
 		do{
 			this.valor=this.random.nextInt(13);
@@ -113,7 +116,7 @@ public class Naipe {
 	public void resetearBaraja(){
 		for(int f=0; f<this.validacion.length;f++){
 			for(int c=0; c<this.validacion[f].length;c++){
-				this.validacion[f][c]=true;
+				this.validacion[f][c]=false;
 			}
 		}
 	}
